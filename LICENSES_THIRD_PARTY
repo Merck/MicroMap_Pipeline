@@ -1,0 +1,32 @@
+--------------------------------------------------
+Third party dependencies listed by License type
+[Format: name (R Library) - URL]
+--------------------------------------------------
+
+GNU General Public License v3.0 (GPL-3)
+
+* R (R Software Environment) - https://www.r-project.org/Licenses/GPL-3
+* xlsx (R library) - https://cran.r-project.org/web/licenses/GPL-3
+* ggrepl (R library) - https://cran.r-project.org/web/licenses/GPL-3
+* optparse (R library) - https://cran.r-project.org/web/licenses/GPL-3
+
+GNU General Public License v2.0 (GPL-2)
+
+* Venndiagram (R library) - https://cran.r-project.org/web/licenses/GPL-2
+* ggplot2 (R library) - https://cran.r-project.org/web/licenses/GPL-2
+* extrafont (R library) - https://cran.r-project.org/web/licenses/GPL-2
+* limma (R library) - https://cran.r-project.org/web/licenses/GPL-2
+* stringr (R library) - https://cran.r-project.org/web/licenses/GPL-2
+* data.table (R library) - https://cran.r-project.org/web/licenses/GPL-2
+* TCGA2STAT (R library) - https://cran.r-project.org/web/licenses/GPL-2
+
+MIT License (MIT) 
+* reshape (R library) - https://cran.r-project.org/web/licenses/MIT
+* readr (R library) - https://cran.r-project.org/web/licenses/MIT
+* plyr (R library) - https://cran.r-project.org/web/licenses/MIT
+
+GNU AGP Public License
+ghostscript v 9.53.2 (unmodified program) - https://www.gnu.org/licenses/agpl-3.0.en.html
+
+Misc Licenses
+ImageMagick (unmodified program) - https://spdx.org/licenses/ImageMagick.html

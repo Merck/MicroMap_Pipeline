@@ -1,0 +1,3 @@
+HLA-C
+SPN
+TRBC1
