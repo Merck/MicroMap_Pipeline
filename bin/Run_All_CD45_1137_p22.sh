@@ -13,6 +13,8 @@ export EXTRA="CD45_Extra_Labels.txt"
 export EXCLUDE="CD45_Exclude.txt"
 export LG2=1
 export XLIM=none
+#  Setting for FDR corrected p-value cutoff
+export PVALCUTOFF=0.05
 #  Enriched
 export C1="#800080"
 #  Membrane

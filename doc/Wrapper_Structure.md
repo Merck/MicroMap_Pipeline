@@ -68,6 +68,10 @@ Log fold change cutoff setting for coloring your volcano plot output.
 
 This variable is for setting the limits on the x-axis to change the view of the volcano plot.  If set to "none" it will default to 10% above the largest integer value of log2 fold change.  
 
+## PVALCUTOFF
+
+FDR corrected p-value cutoff setting for volcano plot.  This defaults to 0.05, but if you want to only filter by log fold change, set this variable to be 1.  
+
 ##  C1
 
 Setting for coloration of enriched proteins in the volcano plot.  All colorations are given as hex values.  
@@ -156,15 +160,5 @@ Tissue from the database to use for the overlap.
 
 Directory to move zip files into after a run.  If this is left blank or commented out, the zip files go into the project/data directory.  
 
-
-
-
-
-
-
-
-
-
-
-
-
+##  ALPHA
+Optional setting to set the alpha (opacity) of all points regardless of where your target is in the plot.  

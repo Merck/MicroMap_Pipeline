@@ -36,11 +36,13 @@ Options<-list(
 	make_option(c('--xlim'), type='character', default="none", help='Limits for x-axis in volcano plot', metavar='XLIM'),
 	make_option(c('--bp'), type='numeric', default=9999, help='box padding for ggrepel', metavar='BP'),
 	make_option(c('--pp'), type='numeric', default=9999, help='point padding for ggrepel', metavar='PP'),
-	make_option(c('--labelsize'), type='numeric', default=, help='Size of ggrepel labels', metavar='LABELSIZE'),
+	make_option(c('--labelsize'), type='numeric', default=12, help='Size of ggrepel labels', metavar='LABELSIZE'),
 	make_option(c('--force_label'), type='character', default='false', help='force creation of labels regardless of significance', metavar='FORCE_LABEL'),
 	make_option(c('--bothsides'), type='character', default='no', help='Color both sides of a volcano plot instead of just the positive one', metavar='BOTHSIDES'),
 	make_option(c('--limitover'), type='character', default='no', help='Limit for maximum overlaps.  Set to no to turn off', metavar='LIMITOVER'),
-	make_option(c('--maxover'), type='numeric', default=9999, help='number of overlaps to set if you turn the limitover setting on', metavar='MAXOVER')
+	make_option(c('--maxover'), type='numeric', default=9999, help='number of overlaps to set if you turn the limitover setting on', metavar='MAXOVER'),
+	make_option(c('--alpha'), type='numeric', default=9999, help='Alpha setting (opacity) of non-significant points', metavar='ALPHA'),
+	make_option(c('--pvalcutoff'), type='numeric', default=0.05, help='FDR corrected p-value cutoff', metavar='PVALCUTOFF')
 )
 
 #  Parse input
@@ -66,6 +68,8 @@ Force_label<-opts$force_label
 BothSides<-opts$bothsides
 LimitOver<-opts$limitover
 MaxOver<-opts$maxover
+Alp<-opts$alpha
+PValCutoff<-opts$pvalcutoff
 
 #  Get setting for maximum overlaps
 if(tolower(LimitOver)=="no"){
@@ -104,38 +108,38 @@ Data_0<-read.csv(paste0(datadir,File),stringsAsFactors=FALSE,check.names=FALSE)
 
 if(tolower(Assoc_List)!="none"){
 	if(file.exists(paste0(WD,"data/",Assoc_List))){
-		Assoc_List<-read.table(paste0(WD,"data/",Assoc_List),stringsAsFactors=FALSE,sep="\t")
+		AL<-read.table(paste0(WD,"data/",Assoc_List),stringsAsFactors=FALSE,sep="\t")
 	}else{
 		print("Association file not found, setting to NULL")
-		Assoc_List<-NULL
+		AL<-NULL
 	}
 }else{
-	Assoc_List<-NULL
+	AL<-NULL
 }
 
 if(tolower(Extra_List)!="none"){
 	if(file.exists(paste0(WD,"data/",Extra_List))){
-		Extra_List<-read.table(paste0(WD,"data/",Extra_List),stringsAsFactors=FALSE,sep="\t")
+		ExtL<-read.table(paste0(WD,"data/",Extra_List),stringsAsFactors=FALSE,sep="\t")
 	}else{
 		print("Extra label file not found, setting to NULL")
-		Extra_List<-NULL
+		ExtL<-NULL
 	}
 }else{
-	Extra_List<-NULL
+	ExtL<-NULL
 }
 
 if(tolower(Exclude_List)!="none"){
 	if(file.exists(paste0(WD,"data/",Exclude_List))){
-		Exclude_List<-read.table(paste0(WD,"data/",Exclude_List),stringsAsFactors=FALSE,sep="\t")
+		ExcL<-read.table(paste0(WD,"data/",Exclude_List),stringsAsFactors=FALSE,sep="\t")
 	}else{
 		print("Exclusion file not found, setting to NULL")
-		Exclude_List<-NULL
+		ExcL<-NULL
 	}
 }else{
-	Exclude_List<-NULL
+	ExcL<-NULL
 }
 
-Labels_List<-rbind(Assoc_List,Extra_List)
+Labels_List<-rbind(AL,ExtL)
 
 CheckTarget<-Data_0[Data_0$Accession==TargetID,"Gene.Symbol"]
 
@@ -147,7 +151,7 @@ if(length(CheckTarget)!=0){
 	print("Target not found in data, proceeding without it")
 }
 #  Filter dataset by suspected contaminants in removal list if given
-Data_0<-Data_0[!Data_0$Gene.Symbol%in%Exclude_List[,1],]
+Data_0<-Data_0[!Data_0$Gene.Symbol%in%ExcL[,1],]
 
 #  Make volcano plots of log2FC values.  
 print("Making volcano plots")
@@ -157,10 +161,10 @@ logFC_All<-Data_0$logFC
 Log10_All<--log(Data_0$P.Value,10)
 
 #  Select p-value cutoff by FDR<=0.05
-Dat2<-Data_0[which(Data_0$adj.P.Val<=0.05),]
+Dat2<-Data_0[which(Data_0$adj.P.Val<=PValCutoff),]
 
 if(nrow(Dat2)>0){
-	PVal<-Dat2[which(abs(Dat2$adj.P.Val-0.05)==min(abs(Dat2$adj.P.Val-0.05))),"P.Value"]
+	PVal<-Dat2[which(abs(Dat2$adj.P.Val-PValCutoff)==min(abs(Dat2$adj.P.Val-PValCutoff))),"P.Value"]
 	#  Select max P-value if there are multiple adjusted p-value matches as can happen with FDR method.  
 	PVal<-max(PVal)
 }else{
@@ -169,10 +173,10 @@ if(nrow(Dat2)>0){
 
 if(tolower(BothSides)=="yes"){
 	Color<-ifelse(abs(Data_0$logFC)>LogCutoff&Data_0$P.Value<=PVal,"Enriched","NS")
-	Color<-ifelse(Color=="Enriched"&Data_0[,"Gene.Symbol"]%in%Assoc_List[,1],"Associated",Color)
+	Color<-ifelse(Color=="Enriched"&Data_0[,"Gene.Symbol"]%in%AL[,1],"Associated",Color)
 }else{
 	Color<-ifelse(Data_0$logFC>LogCutoff&Data_0$P.Value<=PVal,"Enriched","NS")
-	Color<-ifelse(Color=="Enriched"&Data_0[,"Gene.Symbol"]%in%Assoc_List[,1],"Associated",Color)
+	Color<-ifelse(Color=="Enriched"&Data_0[,"Gene.Symbol"]%in%AL[,1],"Associated",Color)
 }
 
 if(any(grepl("Membrane",colnames(Data_0)))){
@@ -188,7 +192,6 @@ Labels_All<-ifelse(Labels_All%in%Labels_List[,1],as.character(Labels_All),"")
 #  Remove label if hit isn't significant
 if(Force_label!="true"){
 	Labels_All<-ifelse(Color=="NS","",Labels_All)
-
 }
 
 #  Fix name so that the usual protein name shows up instead gene name, e.g. CD45 instead of PTPRC
@@ -265,6 +268,16 @@ if(length(CheckTarget)!=0){
 	A_tar=0.8
 	LogFCTest<-NULL
 	Ptest<-NULL
+}
+
+#  Switch to given alpha if present.
+if(Alp<=1){
+	Alpha=rep(Alp,length(Color))
+	A_tar=Alp
+}else if(Alp==9999){
+	print("No Alpha setting given, leaving alone.")
+}else{
+	print("Your Alpha setting of ", Alp," is not less than 1.  Switching this to the default of 0.8.")
 }
 
 DFAll<-cbind(DFAll,Alpha)

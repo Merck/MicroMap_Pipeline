@@ -32,6 +32,8 @@ KEEPFILT=${KEEPFILT:-yes}
 BOTHSIDES=${BOTHSIDES:-no}
 LIMITOVER=${LIMITOVER:-no}
 MAXOVER=${MAXOVER:-9999}
+ALPHA=${ALPHA:-9999}
+PVALCUTOFF=${PVALCUTOFF:-0.05}
 
 export BINDIR=$(pwd)
 cd ../data/
@@ -57,7 +59,7 @@ echo "Adding in membrane, amino acid count, and description detail to output fil
 Rscript GetProteinDetails.r --name $NAME --target $TARGET --uniprotid $UNIPROTID --metric $METRIC --norm $NORM --database $DATABASE
 
 echo "Running volcano plot creation"
-Rscript VolcanoPlots_IQTMT_proteinlvl.r --name $NAME --target $TARGET --uniprotid $UNIPROTID --group2 $GROUP2 --group1 $GROUP1 --metric $METRIC --norm $NORM --lg2 $LG2 --xlim $XLIM --assoc $ASSOC --extra $EXTRA --exclude $EXCLUDE --c1 $C1 --c2 $C2 --c3 $C3 --cns $CNS --ct $CT --bp $BP --pp $PP --labelsize $LS --force_label $FORCE_LABEL --bothsides $BOTHSIDES --limitover $LIMITOVER --maxover $MAXOVER
+Rscript VolcanoPlots_IQTMT_proteinlvl.r --name $NAME --target $TARGET --uniprotid $UNIPROTID --group2 $GROUP2 --group1 $GROUP1 --metric $METRIC --norm $NORM --lg2 $LG2 --xlim $XLIM --assoc $ASSOC --extra $EXTRA --exclude $EXCLUDE --c1 $C1 --c2 $C2 --c3 $C3 --cns $CNS --ct $CT --bp $BP --pp $PP --labelsize $LS --force_label $FORCE_LABEL --bothsides $BOTHSIDES --limitover $LIMITOVER --maxover $MAXOVER --alpha $ALPHA --pvalcutoff $PVALCUTOFF
 
 if [ $PATHOLOGY = "none" ]; then
 	echo "No overlap with pathology database requested, skipping"
